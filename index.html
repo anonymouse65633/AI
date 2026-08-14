@@ -6,415 +6,255 @@
 <title>Home AI</title>
 <style>
   :root{
-    --cream:#F7F4EE;
-    --cream-2:#EFEBE2;
-    --ink:#2B2621;
-    --ink-soft:#6B6459;
-    --terracotta:#C96442;
-    --terracotta-soft:#EFDCD1;
-    --line:#E4DFD3;
-    --danger:#B3453A;
+    --cream:#F7F4EE; --cream-2:#EFEBE2; --ink:#2B2621; --ink-soft:#6B6459;
+    --terracotta:#C96442; --terracotta-soft:#EFDCD1; --line:#E4DFD3; --danger:#B3453A;
   }
   *{box-sizing:border-box;}
-  html,body{height:100%;}
-  body{
-    margin:0;
-    background:var(--cream);
-    color:var(--ink);
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
-    -webkit-font-smoothing:antialiased;
-  }
+  html,body{height:100%;margin:0;}
+  body{background:var(--cream);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;-webkit-font-smoothing:antialiased;}
+  button{font-family:inherit;cursor:pointer;border:none;}
+  input{font-family:inherit;}
 
-  /* ---------- Gate screen ---------- */
-  #gate{
-    height:100vh;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:24px;
-  }
-  .gate-card{
-    width:100%;
-    max-width:380px;
-    background:#fff;
-    border:1px solid var(--line);
-    border-radius:16px;
-    padding:32px 28px;
-    box-shadow:0 1px 3px rgba(43,38,33,0.06);
-  }
-  .mark{
-    width:34px;height:34px;
-    border-radius:50%;
-    background:radial-gradient(circle at 30% 30%, #E08761, var(--terracotta));
-    margin-bottom:18px;
-  }
-  .gate-card h1{
-    font-size:19px;
-    margin:0 0 6px 0;
-    font-weight:600;
-  }
-  .gate-card p{
-    font-size:13.5px;
-    color:var(--ink-soft);
-    margin:0 0 22px 0;
-    line-height:1.5;
-  }
-  label{
-    display:block;
-    font-size:12.5px;
-    font-weight:600;
-    color:var(--ink-soft);
-    margin-bottom:6px;
-    margin-top:16px;
-  }
+  /* ---------- Centered auth screens (gate + login) ---------- */
+  .center-screen{height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+  .auth-card{width:100%;max-width:380px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:32px 28px;box-shadow:0 1px 3px rgba(43,38,33,0.06);}
+  .mark{width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 30% 30%, #E08761, var(--terracotta));margin-bottom:18px;}
+  .auth-card h1{font-size:19px;margin:0 0 6px 0;font-weight:600;}
+  .auth-card p{font-size:13.5px;color:var(--ink-soft);margin:0 0 22px 0;line-height:1.5;}
+  label{display:block;font-size:12.5px;font-weight:600;color:var(--ink-soft);margin-bottom:6px;margin-top:16px;}
   label:first-of-type{margin-top:0;}
-  input[type="text"],input[type="password"]{
-    width:100%;
-    padding:10px 12px;
-    border:1px solid var(--line);
-    border-radius:9px;
-    font-size:14px;
-    background:var(--cream);
-    color:var(--ink);
-    outline:none;
-  }
-  input[type="text"]:focus,input[type="password"]{
-    border-color:var(--terracotta);
-  }
-  .remember{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    margin-top:16px;
-    font-size:13px;
-    color:var(--ink-soft);
-  }
+  input[type="text"],input[type="password"]{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;font-size:14px;background:var(--cream);color:var(--ink);outline:none;}
+  input:focus{border-color:var(--terracotta);}
+  .remember{display:flex;align-items:center;gap:8px;margin-top:16px;font-size:13px;color:var(--ink-soft);}
   .remember input{width:auto;}
-  button{
-    font-family:inherit;
-    cursor:pointer;
-    border:none;
-  }
-  .btn-primary{
-    width:100%;
-    margin-top:22px;
-    background:var(--terracotta);
-    color:#fff;
-    padding:11px;
-    border-radius:9px;
-    font-size:14.5px;
-    font-weight:600;
-  }
+  .btn-primary{width:100%;margin-top:22px;background:var(--terracotta);color:#fff;padding:11px;border-radius:9px;font-size:14.5px;font-weight:600;}
   .btn-primary:hover{background:#B4573A;}
   .btn-primary:disabled{opacity:0.55;cursor:default;}
-  .gate-error{
-    color:var(--danger);
-    font-size:12.5px;
-    margin-top:12px;
-    display:none;
-  }
+  .auth-error{color:var(--danger);font-size:12.5px;margin-top:12px;display:none;}
+  .hint{margin-top:18px;font-size:12px;color:var(--ink-soft);text-align:center;}
+  .hint code{background:var(--cream-2);padding:1px 5px;border-radius:4px;}
+  .link-btn{background:none;color:var(--terracotta);font-size:12.5px;margin-top:14px;width:100%;text-align:center;}
 
   /* ---------- App shell ---------- */
-  #app{display:none; height:100vh; flex-direction:column;}
-  header{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:12px 20px;
-    border-bottom:1px solid var(--line);
-    background:var(--cream);
-    flex-shrink:0;
-  }
-  .brand{display:flex;align-items:center;gap:10px;}
-  .brand .mark{width:22px;height:22px;margin:0;}
-  .brand span{font-weight:600;font-size:14.5px;}
-  .model-pill{
-    display:flex;
-    align-items:center;
-    gap:7px;
-    background:var(--cream-2);
-    border:1px solid var(--line);
-    padding:6px 12px;
-    border-radius:999px;
-    font-size:12.5px;
-    color:var(--ink-soft);
-  }
-  .model-pill:hover{border-color:var(--terracotta);color:var(--ink);}
-  .dot{width:7px;height:7px;border-radius:50%;background:#5C9C6A;flex-shrink:0;}
+  #app{display:none;height:100vh;}
+  .layout{display:flex;height:100%;}
 
-  main{
-    flex:1;
-    overflow-y:auto;
-    padding:24px 0 12px 0;
-  }
-  .thread{
-    max-width:720px;
-    margin:0 auto;
-    padding:0 20px;
-  }
-  .msg{margin-bottom:22px; line-height:1.6; font-size:15px;}
-  .msg.user{
-    display:flex;
-    justify-content:flex-end;
-  }
-  .msg.user .bubble{
-    background:var(--terracotta-soft);
-    color:var(--ink);
-    padding:10px 15px;
-    border-radius:14px 14px 3px 14px;
-    max-width:80%;
-    white-space:pre-wrap;
-    word-wrap:break-word;
-  }
-  .msg.assistant .bubble{
-    white-space:pre-wrap;
-    word-wrap:break-word;
-    max-width:100%;
-  }
-  .msg.assistant .role-label{
-    font-size:11.5px;
-    font-weight:600;
-    color:var(--ink-soft);
-    margin-bottom:6px;
-    letter-spacing:0.02em;
-  }
-  .bubble pre{
-    background:#2B2621;
-    color:#F2ECE2;
-    padding:12px 14px;
-    border-radius:8px;
-    overflow-x:auto;
-    font-size:13px;
-    margin:8px 0;
-  }
-  .bubble code{
-    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-  }
-  .bubble :not(pre) > code{
-    background:var(--cream-2);
-    padding:1px 5px;
-    border-radius:4px;
-    font-size:0.9em;
-  }
-  .typing{
-    display:inline-flex;
-    gap:4px;
-    padding:4px 0;
-  }
-  .typing span{
-    width:6px;height:6px;border-radius:50%;
-    background:var(--ink-soft);
-    animation:bounce 1.2s infinite ease-in-out;
-  }
+  .sidebar{width:260px;flex-shrink:0;background:var(--cream-2);border-right:1px solid var(--line);display:flex;flex-direction:column;transition:margin-left .15s ease;}
+  .sidebar.collapsed{margin-left:-260px;}
+  .sidebar-top{padding:14px;}
+  .brand{display:flex;align-items:center;gap:9px;margin-bottom:14px;padding:0 4px;}
+  .brand .mark{width:20px;height:20px;margin:0;}
+  .brand span{font-weight:600;font-size:14px;}
+  .new-chat-btn{width:100%;display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);padding:9px 12px;border-radius:9px;font-size:13.5px;color:var(--ink);}
+  .new-chat-btn:hover{border-color:var(--terracotta);}
+  .chat-list{flex:1;overflow-y:auto;padding:6px 10px;}
+  .chat-item{padding:9px 10px;border-radius:8px;font-size:13px;color:var(--ink-soft);cursor:pointer;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;justify-content:space-between;align-items:center;gap:6px;}
+  .chat-item:hover{background:#fff;}
+  .chat-item.active{background:#fff;color:var(--ink);font-weight:600;}
+  .chat-item .del{opacity:0;background:none;color:var(--ink-soft);font-size:14px;flex-shrink:0;}
+  .chat-item:hover .del{opacity:1;}
+
+  .sidebar-bottom{border-top:1px solid var(--line);padding:12px 14px;}
+  .user-row{display:flex;align-items:center;justify-content:space-between;font-size:13px;}
+  .user-name{font-weight:600;}
+  .sidebar-actions{display:flex;flex-direction:column;gap:4px;margin-top:10px;}
+  .sidebar-actions button{background:none;text-align:left;font-size:12.5px;color:var(--ink-soft);padding:6px 4px;border-radius:6px;}
+  .sidebar-actions button:hover{background:#fff;color:var(--ink);}
+
+  .main-col{flex:1;display:flex;flex-direction:column;min-width:0;}
+  header{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--line);flex-shrink:0;}
+  .header-left{display:flex;align-items:center;gap:10px;}
+  .sidebar-toggle{background:none;color:var(--ink-soft);width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;}
+  .sidebar-toggle:hover{background:var(--cream-2);}
+  .model-pill{display:flex;align-items:center;gap:7px;background:var(--cream-2);border:1px solid var(--line);padding:6px 12px;border-radius:999px;font-size:12.5px;color:var(--ink-soft);}
+  .dot{width:7px;height:7px;border-radius:50%;background:#5C9C6A;flex-shrink:0;}
+  .thinking-toggle{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink-soft);}
+  .switch{position:relative;width:34px;height:19px;background:var(--cream-2);border:1px solid var(--line);border-radius:999px;cursor:pointer;flex-shrink:0;}
+  .switch.on{background:var(--terracotta);}
+  .switch .knob{position:absolute;top:2px;left:2px;width:13px;height:13px;background:#fff;border-radius:50%;transition:left .15s ease;}
+  .switch.on .knob{left:17px;}
+
+  .demo-banner{display:none;background:var(--terracotta-soft);color:#8A4A2F;text-align:center;font-size:12.5px;padding:7px;flex-shrink:0;}
+
+  main{flex:1;overflow-y:auto;padding:24px 0 12px 0;}
+  .thread{max-width:720px;margin:0 auto;padding:0 20px;}
+  .msg{margin-bottom:22px;line-height:1.6;font-size:15px;}
+  .msg.user{display:flex;justify-content:flex-end;}
+  .msg.user .bubble{background:var(--terracotta-soft);color:var(--ink);padding:10px 15px;border-radius:14px 14px 3px 14px;max-width:80%;white-space:pre-wrap;word-wrap:break-word;}
+  .msg.assistant .bubble{white-space:pre-wrap;word-wrap:break-word;max-width:100%;}
+  .msg.assistant .role-label{font-size:11.5px;font-weight:600;color:var(--ink-soft);margin-bottom:6px;letter-spacing:0.02em;}
+  .bubble pre{background:#2B2621;color:#F2ECE2;padding:12px 14px;border-radius:8px;overflow-x:auto;font-size:13px;margin:8px 0;}
+  .bubble code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;}
+  .bubble :not(pre) > code{background:var(--cream-2);padding:1px 5px;border-radius:4px;font-size:0.9em;}
+  .typing{display:inline-flex;gap:4px;padding:4px 0;}
+  .typing span{width:6px;height:6px;border-radius:50%;background:var(--ink-soft);animation:bounce 1.2s infinite ease-in-out;}
   .typing span:nth-child(2){animation-delay:0.15s;}
   .typing span:nth-child(3){animation-delay:0.3s;}
   @keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:0.4;}30%{transform:translateY(-4px);opacity:1;}}
 
-  .empty-state{
-    max-width:520px;
-    margin:12vh auto 0 auto;
-    text-align:center;
-    color:var(--ink-soft);
-  }
+  .empty-state{max-width:520px;margin:12vh auto 0 auto;text-align:center;color:var(--ink-soft);}
   .empty-state .mark{margin:0 auto 16px auto;}
   .empty-state h2{font-size:17px;color:var(--ink);margin:0 0 6px 0;font-weight:600;}
   .empty-state p{font-size:13.5px;margin:0;}
 
-  footer{
-    flex-shrink:0;
-    padding:14px 20px 20px 20px;
-  }
-  .composer{
-    max-width:720px;
-    margin:0 auto;
-    background:#fff;
-    border:1px solid var(--line);
-    border-radius:16px;
-    padding:8px 8px 8px 16px;
-    display:flex;
-    align-items:flex-end;
-    gap:8px;
-    box-shadow:0 1px 3px rgba(43,38,33,0.05);
-  }
-  .composer textarea{
-    flex:1;
-    border:none;
-    outline:none;
-    resize:none;
-    font-family:inherit;
-    font-size:14.5px;
-    line-height:1.5;
-    max-height:160px;
-    padding:8px 0;
-    background:transparent;
-    color:var(--ink);
-  }
-  .icon-btn{
-    background:transparent;
-    color:var(--ink-soft);
-    width:34px;height:34px;
-    border-radius:9px;
-    display:flex;align-items:center;justify-content:center;
-    flex-shrink:0;
-  }
-  .icon-btn:hover{background:var(--cream-2);color:var(--ink);}
-  .send-btn{
-    background:var(--terracotta);
-    color:#fff;
-    width:34px;height:34px;
-    border-radius:9px;
-    display:flex;align-items:center;justify-content:center;
-    flex-shrink:0;
-  }
-  .send-btn:disabled{background:var(--cream-2);color:var(--ink-soft);cursor:default;}
-  .attach-chip{
-    max-width:720px;
-    margin:0 auto 8px auto;
-    display:flex;
-    gap:8px;
-    flex-wrap:wrap;
-  }
-  .chip{
-    background:var(--cream-2);
-    border:1px solid var(--line);
-    border-radius:8px;
-    padding:5px 10px;
-    font-size:12px;
-    color:var(--ink-soft);
-    display:flex;
-    align-items:center;
-    gap:6px;
-  }
+  footer{flex-shrink:0;padding:14px 20px 20px 20px;}
+  .attach-chip{max-width:720px;margin:0 auto 8px auto;display:flex;gap:8px;flex-wrap:wrap;}
+  .chip{background:var(--cream-2);border:1px solid var(--line);border-radius:8px;padding:5px 10px;font-size:12px;color:var(--ink-soft);display:flex;align-items:center;gap:6px;}
   .chip button{background:none;color:var(--ink-soft);font-size:14px;line-height:1;}
+  .composer{max-width:720px;margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:16px;padding:8px 8px 8px 16px;display:flex;align-items:flex-end;gap:8px;box-shadow:0 1px 3px rgba(43,38,33,0.05);}
+  .composer textarea{flex:1;border:none;outline:none;resize:none;font-family:inherit;font-size:14.5px;line-height:1.5;max-height:160px;padding:8px 0;background:transparent;color:var(--ink);}
+  .icon-btn{background:transparent;color:var(--ink-soft);width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .icon-btn:hover{background:var(--cream-2);color:var(--ink);}
+  .send-btn{background:var(--terracotta);color:#fff;width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .send-btn:disabled{background:var(--cream-2);color:var(--ink-soft);cursor:default;}
 
-  /* ---------- Admin modal ---------- */
-  .modal-backdrop{
-    display:none;
-    position:fixed;inset:0;
-    background:rgba(43,38,33,0.35);
-    align-items:center;justify-content:center;
-    z-index:50;
-    padding:20px;
-  }
-  .modal{
-    background:#fff;
-    border-radius:14px;
-    padding:24px;
-    width:100%;max-width:340px;
-  }
+  /* ---------- Modals ---------- */
+  .modal-backdrop{display:none;position:fixed;inset:0;background:rgba(43,38,33,0.35);align-items:center;justify-content:center;z-index:50;padding:20px;}
+  .modal{background:#fff;border-radius:14px;padding:24px;width:100%;max-width:380px;max-height:80vh;overflow-y:auto;}
   .modal h3{margin:0 0 4px 0;font-size:16px;}
   .modal p{margin:0 0 16px 0;font-size:12.5px;color:var(--ink-soft);}
-  .model-option{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:10px 12px;
-    border:1px solid var(--line);
-    border-radius:9px;
-    margin-bottom:8px;
-    font-size:13.5px;
-    cursor:pointer;
-  }
+  .modal .section{margin-bottom:20px;}
+  .modal .section-title{font-size:12px;font-weight:600;color:var(--ink-soft);margin-bottom:8px;text-transform:uppercase;letter-spacing:.03em;}
+  .model-option{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid var(--line);border-radius:9px;margin-bottom:8px;font-size:13.5px;cursor:pointer;}
   .model-option:hover{border-color:var(--terracotta);}
   .model-option.active{border-color:var(--terracotta);background:var(--terracotta-soft);}
-  .modal-close{
-    margin-top:6px;
-    width:100%;
-    background:var(--cream-2);
-    color:var(--ink);
-    padding:9px;
-    border-radius:9px;
-    font-size:13.5px;
-  }
-  .demo-banner{
-    display:none;
-    background:var(--terracotta-soft);
-    color:#8A4A2F;
-    text-align:center;
-    font-size:12.5px;
-    padding:7px;
-    flex-shrink:0;
-  }
+  .stat-row{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--cream-2);}
+  .modal-close{margin-top:6px;width:100%;background:var(--cream-2);color:var(--ink);padding:9px;border-radius:9px;font-size:13.5px;}
 </style>
 </head>
 <body>
 
 <!-- ================= GATE ================= -->
-<div id="gate">
-  <div class="gate-card">
+<div id="gate" class="center-screen">
+  <div class="auth-card">
     <div class="mark"></div>
     <h1>Connect to your AI</h1>
-    <p>Enter your server address and access key. Both are only stored on this device.</p>
-
+    <p>Enter your server address and access key.</p>
     <label for="serverUrl">Server URL</label>
     <input type="text" id="serverUrl" placeholder="https://your-tunnel-url.trycloudflare.com">
+    <label for="accessKey">Access key</label>
+    <input type="password" id="accessKey" placeholder="Your access key">
+    <div class="remember"><input type="checkbox" id="rememberMe" checked><label style="margin:0;font-weight:400;color:var(--ink-soft);" for="rememberMe">Remember on this device</label></div>
+    <button class="btn-primary" id="connectBtn">Continue</button>
+    <div class="auth-error" id="gateError">Couldn't reach that server. Check the URL and key, then try again.</div>
+    <p class="hint">No server yet? Use <code>test-code</code> as the URL and <code>ABC12345</code> as the key to try the interface in demo mode.</p>
+  </div>
+</div>
 
-    <label for="apiKey">Access key</label>
-    <input type="password" id="apiKey" placeholder="Your access key">
-
-    <div class="remember">
-      <input type="checkbox" id="rememberMe" checked>
-      <label style="margin:0;font-weight:400;color:var(--ink-soft);" for="rememberMe">Remember on this device</label>
-    </div>
-
-    <button class="btn-primary" id="connectBtn">Connect</button>
-    <div class="gate-error" id="gateError">Couldn't reach that server. Check the URL and key, then try again.</div>
-
-    <p style="margin-top:18px;font-size:12px;color:var(--ink-soft);text-align:center;">
-      No server yet? Use <code style="background:var(--cream-2);padding:1px 5px;border-radius:4px;">test-code</code>
-      as the URL and <code style="background:var(--cream-2);padding:1px 5px;border-radius:4px;">ABC12345</code>
-      as the key to try the interface in demo mode.
-    </p>
+<!-- ================= LOGIN ================= -->
+<div id="loginScreen" class="center-screen" style="display:none;">
+  <div class="auth-card">
+    <div class="mark"></div>
+    <h1>Sign in</h1>
+    <p>Your own name and password — your chats are private to your account.</p>
+    <label for="loginUser">Name</label>
+    <input type="text" id="loginUser" placeholder="Your name">
+    <label for="loginPass">Password</label>
+    <input type="password" id="loginPass" placeholder="Your password">
+    <button class="btn-primary" id="loginBtn">Sign in</button>
+    <div class="auth-error" id="loginError">Incorrect name or password.</div>
+    <button class="link-btn" id="backToGate">Use a different server</button>
   </div>
 </div>
 
 <!-- ================= APP ================= -->
 <div id="app">
-  <header>
-    <div class="brand">
-      <div class="mark"></div>
-      <span>Home AI</span>
-    </div>
-    <button class="model-pill" id="modelPill">
-      <span class="dot"></span>
-      <span id="modelName">connecting…</span>
-    </button>
-  </header>
-
-  <div class="demo-banner" id="demoBanner">Demo mode — not connected to a real model. Responses are simulated.</div>
-
-  <main id="main">
-    <div class="thread" id="thread">
-      <div class="empty-state" id="emptyState">
-        <div class="mark"></div>
-        <h2>Ready when you are</h2>
-        <p>Running on your own PC — ask a coding question, paste an error, or attach a file to get started.</p>
+  <div class="layout">
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-top">
+        <div class="brand"><div class="mark"></div><span>Home AI</span></div>
+        <button class="new-chat-btn" id="newChatBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
+          New chat
+        </button>
+      </div>
+      <div class="chat-list" id="chatList"></div>
+      <div class="sidebar-bottom">
+        <div class="user-row"><span class="user-name" id="userName">—</span></div>
+        <div class="sidebar-actions">
+          <button id="thinkingRowBtn">Thinking: <span id="thinkingState">on</span></button>
+          <button id="adminBtn" style="display:none;">Admin</button>
+          <button id="logoutBtn">Log out</button>
+        </div>
       </div>
     </div>
-  </main>
 
-  <footer>
-    <div class="attach-chip" id="attachChips"></div>
-    <div class="composer">
-      <button class="icon-btn" id="attachBtn" title="Attach a file">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
-      </button>
-      <input type="file" id="fileInput" style="display:none" multiple>
-      <textarea id="messageInput" placeholder="Message your AI…" rows="1"></textarea>
-      <button class="send-btn" id="sendBtn" disabled title="Send">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"></path></svg>
-      </button>
+    <div class="main-col">
+      <header>
+        <div class="header-left">
+          <button class="sidebar-toggle" id="sidebarToggle" title="Toggle sidebar">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+          </button>
+        </div>
+        <button class="model-pill" id="modelPill"><span class="dot"></span><span id="modelName">connecting…</span></button>
+      </header>
+
+      <div class="demo-banner" id="demoBanner">Demo mode — not connected to a real model. Responses are simulated.</div>
+
+      <main id="main">
+        <div class="thread" id="thread">
+          <div class="empty-state" id="emptyState">
+            <div class="mark"></div>
+            <h2>Ready when you are</h2>
+            <p>Running on your own PC — ask a coding question, paste an error, or attach a file to get started.</p>
+          </div>
+        </div>
+      </main>
+
+      <footer>
+        <div class="attach-chip" id="attachChips"></div>
+        <div class="composer">
+          <button class="icon-btn" id="attachBtn" title="Attach a file">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+          </button>
+          <input type="file" id="fileInput" style="display:none" multiple>
+          <textarea id="messageInput" placeholder="Message your AI…" rows="1"></textarea>
+          <button class="send-btn" id="sendBtn" disabled title="Send">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"></path></svg>
+          </button>
+        </div>
+      </footer>
     </div>
-  </footer>
+  </div>
 </div>
 
-<!-- ================= ADMIN MODAL ================= -->
-<div class="modal-backdrop" id="adminBackdrop">
+<!-- ================= MODEL SWITCH MODAL (admin) ================= -->
+<div class="modal-backdrop" id="modelBackdrop">
   <div class="modal">
     <h3>Switch model</h3>
-    <p>Choose which model on your PC handles the next messages.</p>
+    <p>Choose which model on your PC handles messages for everyone.</p>
     <div id="modelList"></div>
-    <button class="modal-close" id="closeModal">Close</button>
+    <button class="modal-close" id="closeModelModal">Close</button>
+  </div>
+</div>
+
+<!-- ================= ADMIN PANEL MODAL ================= -->
+<div class="modal-backdrop" id="adminBackdrop">
+  <div class="modal">
+    <h3>Admin</h3>
+    <p>Model, usage, and people who can access this site.</p>
+
+    <div class="section">
+      <div class="section-title">Active model</div>
+      <div id="adminModelList"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">PC status</div>
+      <div id="statusBlock"><p style="font-size:12.5px;color:var(--ink-soft);">Loading…</p></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Add a person</div>
+      <label for="newUserName" style="margin-top:0;">Name</label>
+      <input type="text" id="newUserName" placeholder="Their name">
+      <label for="newUserPass">Password</label>
+      <input type="password" id="newUserPass" placeholder="Set a password">
+      <button class="btn-primary" id="addUserBtn" style="margin-top:12px;">Add person</button>
+      <div class="auth-error" id="addUserError"></div>
+    </div>
+
+    <button class="modal-close" id="closeAdminModal">Close</button>
   </div>
 </div>
 
@@ -422,12 +262,6 @@
 (function(){
   "use strict";
 
-  // ---- Change this to whatever you like. This is a soft UI gate only,
-  // not real security — the real access control is the server access key. ----
-  const ADMIN_CODE = "changeme";
-
-  // Demo-mode bypass — lets you try the UI before your real host/proxy is running.
-  // Type these into the gate screen instead of a real URL/key.
   const DEMO_URL = "test-code";
   const DEMO_KEY = "ABC12345";
   let demoMode = false;
@@ -435,26 +269,37 @@
   const $ = (id) => document.getElementById(id);
 
   let serverUrl = localStorage.getItem("homeai_url") || "";
-  let apiKey = localStorage.getItem("homeai_key") || "";
-  let activeModel = localStorage.getItem("homeai_model") || "";
+  let accessKey = localStorage.getItem("homeai_access") || "";
+  let sessionToken = localStorage.getItem("homeai_token") || "";
+  let username = localStorage.getItem("homeai_username") || "";
+  let isAdmin = localStorage.getItem("homeai_isadmin") === "1";
+  let thinkingEnabled = localStorage.getItem("homeai_thinking") !== "0";
+
   let availableModels = [];
-  let history = [];
+  let activeModel = null;
+  let currentChatId = null;
   let attachments = [];
+  let demoChats = [{id:"demo1",title:"Example: refactor a function"},{id:"demo2",title:"Example: debug a stack trace"}];
+
+  function api(path){ return serverUrl.replace(/\/$/,"") + path; }
+  function authHeaders(json){
+    const h = { "X-Access-Key": accessKey };
+    if(sessionToken) h["Authorization"] = "Bearer " + sessionToken;
+    if(json) h["Content-Type"] = "application/json";
+    return h;
+  }
 
   // ---------------- Gate ----------------
   $("serverUrl").value = serverUrl;
-  $("apiKey").value = apiKey;
+  $("accessKey").value = accessKey;
 
-  if (serverUrl && apiKey) {
-    tryConnect(true);
-  }
+  $("connectBtn").addEventListener("click", () => tryGate(false));
+  if(serverUrl && accessKey && sessionToken){ tryGate(true); }
 
-  $("connectBtn").addEventListener("click", () => tryConnect(false));
-
-  async function tryConnect(silent){
+  async function tryGate(silent){
     const url = $("serverUrl").value.trim().replace(/\/$/, "");
-    const key = $("apiKey").value.trim();
-    if(!url || !key){ return; }
+    const key = $("accessKey").value.trim();
+    if(!url || !key) return;
 
     $("connectBtn").disabled = true;
     $("connectBtn").textContent = "Connecting…";
@@ -462,82 +307,219 @@
 
     if(url === DEMO_URL && key === DEMO_KEY){
       demoMode = true;
+      serverUrl = url; accessKey = key;
       availableModels = ["demo-model-fast", "demo-model-smart"];
-      activeModel = activeModel || availableModels[0];
-      serverUrl = url;
-      apiKey = key;
-      if($("rememberMe").checked){
-        localStorage.setItem("homeai_url", url);
-        localStorage.setItem("homeai_key", key);
-      }
-      $("modelName").textContent = activeModel + " (demo)";
-      $("demoBanner").style.display = "block";
-      $("gate").style.display = "none";
-      $("app").style.display = "flex";
+      activeModel = availableModels[0];
+      username = "You (demo)";
+      isAdmin = true;
+      enterApp();
       return;
     }
 
+    serverUrl = url; accessKey = key;
+    if($("rememberMe").checked){
+      localStorage.setItem("homeai_url", url);
+      localStorage.setItem("homeai_access", key);
+    }
+
+    if(sessionToken){
+      // already have a session from a previous visit — skip straight to the app
+      const ok = await refreshModels();
+      if(ok){ enterApp(); return; }
+    }
+
+    $("gate").style.display = "none";
+    $("loginScreen").style.display = "flex";
+    $("connectBtn").disabled = false;
+    $("connectBtn").textContent = "Continue";
+  }
+
+  $("backToGate").addEventListener("click", () => {
+    $("loginScreen").style.display = "none";
+    $("gate").style.display = "flex";
+  });
+
+  // ---------------- Login ----------------
+  $("loginBtn").addEventListener("click", doLogin);
+  [$("loginUser"), $("loginPass")].forEach(el => el.addEventListener("keydown", e => { if(e.key === "Enter") doLogin(); }));
+
+  async function doLogin(){
+    const user = $("loginUser").value.trim();
+    const pass = $("loginPass").value;
+    if(!user || !pass) return;
+
+    $("loginBtn").disabled = true;
+    $("loginError").style.display = "none";
+
     try{
-      const res = await fetch(url + "/models", {
-        headers: { "Authorization": "Bearer " + key }
+      const res = await fetch(api("/login"), {
+        method:"POST",
+        headers: authHeaders(true),
+        body: JSON.stringify({ username:user, password:pass })
       });
-      if(!res.ok) throw new Error("bad response");
+      if(!res.ok) throw new Error("bad login");
       const data = await res.json();
-      availableModels = data.models || [];
+      sessionToken = data.token;
+      username = data.username;
+      isAdmin = data.is_admin;
+      thinkingEnabled = data.thinking_enabled;
 
-      serverUrl = url;
-      apiKey = key;
-      if($("rememberMe").checked){
-        localStorage.setItem("homeai_url", url);
-        localStorage.setItem("homeai_key", key);
-      }
-      if(!activeModel && availableModels.length){
-        activeModel = availableModels[0];
-        localStorage.setItem("homeai_model", activeModel);
-      }
+      localStorage.setItem("homeai_token", sessionToken);
+      localStorage.setItem("homeai_username", username);
+      localStorage.setItem("homeai_isadmin", isAdmin ? "1":"0");
+      localStorage.setItem("homeai_thinking", thinkingEnabled ? "1":"0");
 
-      $("modelName").textContent = activeModel || "no model found";
-      $("gate").style.display = "none";
-      $("app").style.display = "flex";
+      await refreshModels();
+      enterApp();
     }catch(err){
-      if(!silent){
-        $("gateError").style.display = "block";
-      }
-      $("connectBtn").disabled = false;
-      $("connectBtn").textContent = "Connect";
+      $("loginError").style.display = "block";
+    }finally{
+      $("loginBtn").disabled = false;
     }
   }
+
+  async function refreshModels(){
+    try{
+      const res = await fetch(api("/models"), { headers: authHeaders() });
+      if(!res.ok) return false;
+      const data = await res.json();
+      availableModels = data.models || [];
+      activeModel = data.active || availableModels[0] || null;
+      return true;
+    }catch(e){ return false; }
+  }
+
+  // ---------------- Enter app ----------------
+  async function enterApp(){
+    $("gate").style.display = "none";
+    $("loginScreen").style.display = "none";
+    $("app").style.display = "block";
+    $("demoBanner").style.display = demoMode ? "block" : "none";
+    $("userName").textContent = username;
+    $("modelName").textContent = activeModel || "no model set";
+    $("adminBtn").style.display = isAdmin ? "block" : "none";
+    $("thinkingState").textContent = thinkingEnabled ? "on" : "off";
+
+    if(demoMode){
+      renderChatList(demoChats.map(c => ({id:c.id, title:c.title})));
+    }else{
+      await loadChatList();
+    }
+  }
+
+  // ---------------- Sidebar / chat list ----------------
+  $("sidebarToggle").addEventListener("click", () => $("sidebar").classList.toggle("collapsed"));
+  $("newChatBtn").addEventListener("click", startNewChat);
+  $("logoutBtn").addEventListener("click", () => {
+    localStorage.removeItem("homeai_token");
+    location.reload();
+  });
+
+  async function loadChatList(){
+    try{
+      const res = await fetch(api("/chats"), { headers: authHeaders() });
+      const data = await res.json();
+      renderChatList(data.chats || []);
+    }catch(e){ /* leave list empty */ }
+  }
+
+  function renderChatList(chats){
+    const box = $("chatList");
+    box.innerHTML = "";
+    chats.forEach(c => {
+      const item = document.createElement("div");
+      item.className = "chat-item" + (c.id === currentChatId ? " active" : "");
+      const label = document.createElement("span");
+      label.textContent = c.title || "New chat";
+      label.style.overflow = "hidden";
+      label.style.textOverflow = "ellipsis";
+      item.appendChild(label);
+      const del = document.createElement("button");
+      del.className = "del"; del.textContent = "×";
+      del.addEventListener("click", (e) => { e.stopPropagation(); deleteChat(c.id); });
+      item.appendChild(del);
+      item.addEventListener("click", () => openChat(c.id));
+      box.appendChild(item);
+    });
+  }
+
+  async function startNewChat(){
+    currentChatId = null;
+    history_reset();
+    if(demoMode){ await loadChatList.call ? null : null; renderChatList(demoChats); return; }
+    try{
+      const res = await fetch(api("/chats"), { method:"POST", headers: authHeaders(true) });
+      const data = await res.json();
+      currentChatId = data.id;
+      await loadChatList();
+    }catch(e){}
+  }
+
+  async function openChat(id){
+    currentChatId = id;
+    history_reset();
+    if(demoMode){
+      appendMessage("assistant", "This is a demo chat preview — connect to a real server to load actual saved messages.");
+      renderChatList(demoChats);
+      return;
+    }
+    try{
+      const res = await fetch(api("/chats/" + id), { headers: authHeaders() });
+      const data = await res.json();
+      (data.messages || []).forEach(m => appendMessage(m.role, m.content));
+      await loadChatList();
+    }catch(e){}
+  }
+
+  async function deleteChat(id){
+    if(demoMode){ demoChats = demoChats.filter(c => c.id !== id); renderChatList(demoChats); return; }
+    try{
+      await fetch(api("/chats/" + id), { method:"DELETE", headers: authHeaders() });
+      if(id === currentChatId){ currentChatId = null; history_reset(); }
+      await loadChatList();
+    }catch(e){}
+  }
+
+  function history_reset(){
+    $("thread").innerHTML = '<div class="empty-state" id="emptyState"><div class="mark"></div><h2>Ready when you are</h2><p>Running on your own PC — ask a coding question, paste an error, or attach a file to get started.</p></div>';
+  }
+
+  // ---------------- Thinking toggle ----------------
+  $("thinkingRowBtn").addEventListener("click", async () => {
+    thinkingEnabled = !thinkingEnabled;
+    $("thinkingState").textContent = thinkingEnabled ? "on" : "off";
+    localStorage.setItem("homeai_thinking", thinkingEnabled ? "1":"0");
+    if(!demoMode){
+      try{
+        await fetch(api("/me/thinking"), {
+          method:"POST", headers: authHeaders(true),
+          body: JSON.stringify({ enabled: thinkingEnabled })
+        });
+      }catch(e){}
+    }
+  });
 
   // ---------------- Composer ----------------
   const input = $("messageInput");
   const sendBtn = $("sendBtn");
-
   input.addEventListener("input", () => {
     input.style.height = "auto";
     input.style.height = Math.min(input.scrollHeight, 160) + "px";
     sendBtn.disabled = input.value.trim().length === 0;
   });
-
   input.addEventListener("keydown", (e) => {
-    if(e.key === "Enter" && !e.shiftKey){
-      e.preventDefault();
-      if(!sendBtn.disabled) sendMessage();
-    }
+    if(e.key === "Enter" && !e.shiftKey){ e.preventDefault(); if(!sendBtn.disabled) sendMessage(); }
   });
-
   sendBtn.addEventListener("click", sendMessage);
 
-  // ---------------- File attach ----------------
   $("attachBtn").addEventListener("click", () => $("fileInput").click());
   $("fileInput").addEventListener("change", async (e) => {
     for(const file of e.target.files){
       try{
         const text = await file.text();
-        attachments.push({ name: file.name, content: text });
+        attachments.push({ name:file.name, content:text });
         renderChips();
-      }catch(err){
-        alert("Couldn't read " + file.name + " — text-based files (code, .txt, .md, .json, .csv) work best.");
-      }
+      }catch(err){ alert("Couldn't read " + file.name + " — text-based files work best."); }
     }
     $("fileInput").value = "";
   });
@@ -557,71 +539,56 @@
     });
   }
 
-  // ---------------- Chat ----------------
   async function sendMessage(){
     const text = input.value.trim();
     if(!text) return;
 
     let fullContent = text;
     if(attachments.length){
-      fullContent += "\n\n" + attachments.map(a =>
-        "Attached file: " + a.name + "\n```\n" + a.content + "\n```"
-      ).join("\n\n");
+      fullContent += "\n\n" + attachments.map(a => "Attached file: " + a.name + "\n```\n" + a.content + "\n```").join("\n\n");
     }
 
-    $("emptyState").style.display = "none";
-    appendMessage("user", text, attachments.map(a => a.name));
-    history.push({ role: "user", content: fullContent });
-    attachments = [];
-    renderChips();
-
-    input.value = "";
-    input.style.height = "auto";
-    sendBtn.disabled = true;
+    const empty = $("emptyState"); if(empty) empty.style.display = "none";
+    appendMessage("user", text);
+    attachments = []; renderChips();
+    input.value = ""; input.style.height = "auto"; sendBtn.disabled = true;
 
     const typingEl = appendTyping();
 
     if(demoMode){
       setTimeout(() => {
         typingEl.remove();
-        const reply = "This is a simulated reply — you're in demo mode, not connected to a real model. " +
-          "Once your proxy and tunnel are running, enter the real server URL and access key on the gate screen instead.";
-        appendMessage("assistant", reply);
-        history.push({ role: "assistant", content: reply });
+        appendMessage("assistant", "Simulated reply — you're in demo mode. Enter a real server URL and key on the gate screen to connect for real.");
       }, 700);
       return;
     }
 
     try{
-      const res = await fetch(serverUrl + "/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer " + apiKey
-        },
-        body: JSON.stringify({
-          model: activeModel,
-          messages: history
-        })
+      if(!currentChatId){
+        const res = await fetch(api("/chats"), { method:"POST", headers: authHeaders(true) });
+        const data = await res.json();
+        currentChatId = data.id;
+        loadChatList();
+      }
+      const res = await fetch(api("/chats/" + currentChatId + "/messages"), {
+        method:"POST", headers: authHeaders(true),
+        body: JSON.stringify({ content: fullContent })
       });
-      if(!res.ok) throw new Error("request failed");
+      if(!res.ok) throw new Error("bad response");
       const data = await res.json();
-      const reply = (data.message && data.message.content) || data.reply || "(empty response)";
-
       typingEl.remove();
-      appendMessage("assistant", reply);
-      history.push({ role: "assistant", content: reply });
+      appendMessage("assistant", data.reply || "(empty response)");
+      loadChatList();
     }catch(err){
       typingEl.remove();
-      appendMessage("assistant", "Couldn't reach your PC — check that the server is running and the tunnel is up, then try again.");
+      appendMessage("assistant", "Couldn't reach your PC — check that the server, proxy, and tunnel are all running.");
     }
   }
 
-  function appendMessage(role, text, fileNames){
+  function appendMessage(role, text){
     const thread = $("thread");
     const wrap = document.createElement("div");
     wrap.className = "msg " + role;
-
     if(role === "user"){
       const bubble = document.createElement("div");
       bubble.className = "bubble";
@@ -637,7 +604,6 @@
       wrap.appendChild(label);
       wrap.appendChild(bubble);
     }
-
     thread.appendChild(wrap);
     $("main").scrollTop = $("main").scrollHeight;
   }
@@ -646,62 +612,119 @@
     const thread = $("thread");
     const wrap = document.createElement("div");
     wrap.className = "msg assistant";
-    wrap.innerHTML = '<div class="role-label">' + (activeModel||"assistant").toUpperCase() +
-      '</div><div class="typing"><span></span><span></span><span></span></div>';
+    wrap.innerHTML = '<div class="role-label">' + (activeModel||"assistant").toUpperCase() + '</div><div class="typing"><span></span><span></span><span></span></div>';
     thread.appendChild(wrap);
     $("main").scrollTop = $("main").scrollHeight;
     return wrap;
   }
 
-  function escapeHtml(s){
-    return s.replace(/[&<>"']/g, (c) => ({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-    }[c]));
-  }
-
+  function escapeHtml(s){ return s.replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
   function renderMarkdownish(text){
-    let escaped = escapeHtml(text);
-    escaped = escaped.replace(/```([\s\S]*?)```/g, (m, code) => "<pre><code>" + code.trim() + "</code></pre>");
-    escaped = escaped.replace(/`([^`]+)`/g, "<code>$1</code>");
-    escaped = escaped.replace(/\n/g, "<br>");
-    return escaped;
+    let e = escapeHtml(text);
+    e = e.replace(/```([\s\S]*?)```/g, (m, code) => "<pre><code>" + code.trim() + "</code></pre>");
+    e = e.replace(/`([^`]+)`/g, "<code>$1</code>");
+    e = e.replace(/\n/g, "<br>");
+    return e;
   }
 
-  // ---------------- Admin: switch model ----------------
+  // ---------------- Model switch (everyone can view, only admin gets here) ----------------
   $("modelPill").addEventListener("click", () => {
-    const code = prompt("Admin code to switch models:");
-    if(code !== ADMIN_CODE){
-      if(code !== null) alert("Incorrect code.");
-      return;
-    }
-    renderModelList();
-    $("adminBackdrop").style.display = "flex";
+    renderModelOptions($("modelList"), false);
+    $("modelBackdrop").style.display = "flex";
   });
+  $("closeModelModal").addEventListener("click", () => $("modelBackdrop").style.display = "none");
 
-  $("closeModal").addEventListener("click", () => {
-    $("adminBackdrop").style.display = "none";
-  });
-
-  function renderModelList(){
-    const box = $("modelList");
+  function renderModelOptions(box, isAdminModal){
     box.innerHTML = "";
     if(!availableModels.length){
-      box.innerHTML = "<p style='font-size:13px;color:var(--ink-soft);'>No models found on the server.</p>";
+      box.innerHTML = "<p style='font-size:13px;color:var(--ink-soft);'>No models found.</p>";
       return;
     }
-    availableModels.forEach((m) => {
+    availableModels.forEach(m => {
       const opt = document.createElement("div");
       opt.className = "model-option" + (m === activeModel ? " active" : "");
       opt.textContent = m;
-      opt.addEventListener("click", () => {
-        activeModel = m;
-        localStorage.setItem("homeai_model", m);
-        $("modelName").textContent = m;
-        $("adminBackdrop").style.display = "none";
-      });
+      if(isAdmin){
+        opt.addEventListener("click", async () => {
+          activeModel = m;
+          $("modelName").textContent = m;
+          if(!demoMode){
+            try{
+              await fetch(api("/admin/model"), { method:"POST", headers: authHeaders(true), body: JSON.stringify({model:m}) });
+            }catch(e){}
+          }
+          $("modelBackdrop").style.display = "none";
+          $("adminBackdrop").style.display = "none";
+        });
+      }
       box.appendChild(opt);
     });
+    if(!isAdmin){
+      const note = document.createElement("p");
+      note.style.cssText = "font-size:12px;color:var(--ink-soft);margin-top:8px;";
+      note.textContent = "Only an admin can change the active model.";
+      box.appendChild(note);
+    }
   }
+
+  // ---------------- Admin panel ----------------
+  $("adminBtn").addEventListener("click", async () => {
+    renderModelOptions($("adminModelList"), true);
+    $("adminBackdrop").style.display = "flex";
+    $("statusBlock").innerHTML = "<p style='font-size:12.5px;color:var(--ink-soft);'>Loading…</p>";
+
+    if(demoMode){
+      $("statusBlock").innerHTML =
+        '<div class="stat-row"><span>Uptime</span><span>2h 14m (demo)</span></div>' +
+        '<div class="stat-row"><span>CPU</span><span>—</span></div>' +
+        '<div class="stat-row"><span>RAM</span><span>—</span></div>';
+      return;
+    }
+    try{
+      const res = await fetch(api("/admin/status"), { headers: authHeaders() });
+      const data = await res.json();
+      let rows = `<div class="stat-row"><span>Uptime</span><span>${formatUptime(data.uptime_seconds)}</span></div>`;
+      if(data.cpu_percent !== undefined) rows += `<div class="stat-row"><span>CPU</span><span>${data.cpu_percent}%</span></div>`;
+      if(data.ram_percent !== undefined) rows += `<div class="stat-row"><span>RAM</span><span>${data.ram_percent}%</span></div>`;
+      $("statusBlock").innerHTML = rows;
+    }catch(e){
+      $("statusBlock").innerHTML = "<p style='font-size:12.5px;color:var(--ink-soft);'>Couldn't load status.</p>";
+    }
+  });
+  $("closeAdminModal").addEventListener("click", () => $("adminBackdrop").style.display = "none");
+
+  function formatUptime(sec){
+    if(sec === undefined) return "—";
+    const h = Math.floor(sec/3600), m = Math.floor((sec%3600)/60);
+    return h + "h " + m + "m";
+  }
+
+  $("addUserBtn").addEventListener("click", async () => {
+    const u = $("newUserName").value.trim();
+    const p = $("newUserPass").value;
+    $("addUserError").style.display = "none";
+    if(!u || !p) return;
+
+    if(demoMode){
+      $("addUserError").style.display = "block";
+      $("addUserError").style.color = "var(--ink-soft)";
+      $("addUserError").textContent = "Demo mode — connect to a real server to actually add people.";
+      return;
+    }
+    try{
+      const res = await fetch(api("/admin/users"), { method:"POST", headers: authHeaders(true), body: JSON.stringify({username:u, password:p}) });
+      const data = await res.json();
+      if(!res.ok) throw new Error(data.error || "failed");
+      $("newUserName").value = ""; $("newUserPass").value = "";
+      $("addUserError").style.display = "block";
+      $("addUserError").style.color = "#5C9C6A";
+      $("addUserError").textContent = "Added — they can now sign in with that name and password.";
+    }catch(e){
+      $("addUserError").style.display = "block";
+      $("addUserError").style.color = "var(--danger)";
+      $("addUserError").textContent = e.message || "Couldn't add that person.";
+    }
+  });
 
 })();
 </script>
