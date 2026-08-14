@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Home AI</title>
+<style>
+  :root{
+    --cream:#F7F4EE;
+    --cream-2:#EFEBE2;
+    --ink:#2B2621;
+    --ink-soft:#6B6459;
+    --terracotta:#C96442;
+    --terracotta-soft:#EFDCD1;
+    --line:#E4DFD3;
+    --danger:#B3453A;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:var(--cream);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ---------- Gate screen ---------- */
+  #gate{
+    height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+  }
+  .gate-card{
+    width:100%;
+    max-width:380px;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:32px 28px;
+    box-shadow:0 1px 3px rgba(43,38,33,0.06);
+  }
+  .mark{
+    width:34px;height:34px;
+    border-radius:50%;
+    background:radial-gradient(circle at 30% 30%, #E08761, var(--terracotta));
+    margin-bottom:18px;
+  }
+  .gate-card h1{
+    font-size:19px;
+    margin:0 0 6px 0;
+    font-weight:600;
+  }
+  .gate-card p{
+    font-size:13.5px;
+    color:var(--ink-soft);
+    margin:0 0 22px 0;
+    line-height:1.5;
+  }
+  label{
+    display:block;
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--ink-soft);
+    margin-bottom:6px;
+    margin-top:16px;
+  }
+  label:first-of-type{margin-top:0;}
+  input[type="text"],input[type="password"]{
+    width:100%;
+    padding:10px 12px;
+    border:1px solid var(--line);
+    border-radius:9px;
+    font-size:14px;
+    background:var(--cream);
+    color:var(--ink);
+    outline:none;
+  }
+  input[type="text"]:focus,input[type="password"]{
+    border-color:var(--terracotta);
+  }
+  .remember{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-top:16px;
+    font-size:13px;
+    color:var(--ink-soft);
+  }
+  .remember input{width:auto;}
+  button{
+    font-family:inherit;
+    cursor:pointer;
+    border:none;
+  }
+  .btn-primary{
+    width:100%;
+    margin-top:22px;
+    background:var(--terracotta);
+    color:#fff;
+    padding:11px;
+    border-radius:9px;
+    font-size:14.5px;
+    font-weight:600;
+  }
+  .btn-primary:hover{background:#B4573A;}
+  .btn-primary:disabled{opacity:0.55;cursor:default;}
+  .gate-error{
+    color:var(--danger);
+    font-size:12.5px;
+    margin-top:12px;
+    display:none;
+  }
+
+  /* ---------- App shell ---------- */
+  #app{display:none; height:100vh; flex-direction:column;}
+  header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:12px 20px;
+    border-bottom:1px solid var(--line);
+    background:var(--cream);
+    flex-shrink:0;
+  }
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand .mark{width:22px;height:22px;margin:0;}
+  .brand span{font-weight:600;font-size:14.5px;}
+  .model-pill{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    background:var(--cream-2);
+    border:1px solid var(--line);
+    padding:6px 12px;
+    border-radius:999px;
+    font-size:12.5px;
+    color:var(--ink-soft);
+  }
+  .model-pill:hover{border-color:var(--terracotta);color:var(--ink);}
+  .dot{width:7px;height:7px;border-radius:50%;background:#5C9C6A;flex-shrink:0;}
+
+  main{
+    flex:1;
+    overflow-y:auto;
+    padding:24px 0 12px 0;
+  }
+  .thread{
+    max-width:720px;
+    margin:0 auto;
+    padding:0 20px;
+  }
+  .msg{margin-bottom:22px; line-height:1.6; font-size:15px;}
+  .msg.user{
+    display:flex;
+    justify-content:flex-end;
+  }
+  .msg.user .bubble{
+    background:var(--terracotta-soft);
+    color:var(--ink);
+    padding:10px 15px;
+    border-radius:14px 14px 3px 14px;
+    max-width:80%;
+    white-space:pre-wrap;
+    word-wrap:break-word;
+  }
+  .msg.assistant .bubble{
+    white-space:pre-wrap;
+    word-wrap:break-word;
+    max-width:100%;
+  }
+  .msg.assistant .role-label{
+    font-size:11.5px;
+    font-weight:600;
+    color:var(--ink-soft);
+    margin-bottom:6px;
+    letter-spacing:0.02em;
+  }
+  .bubble pre{
+    background:#2B2621;
+    color:#F2ECE2;
+    padding:12px 14px;
+    border-radius:8px;
+    overflow-x:auto;
+    font-size:13px;
+    margin:8px 0;
+  }
+  .bubble code{
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  .bubble :not(pre) > code{
+    background:var(--cream-2);
+    padding:1px 5px;
+    border-radius:4px;
+    font-size:0.9em;
+  }
+  .typing{
+    display:inline-flex;
+    gap:4px;
+    padding:4px 0;
+  }
+  .typing span{
+    width:6px;height:6px;border-radius:50%;
+    background:var(--ink-soft);
+    animation:bounce 1.2s infinite ease-in-out;
+  }
+  .typing span:nth-child(2){animation-delay:0.15s;}
+  .typing span:nth-child(3){animation-delay:0.3s;}
+  @keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:0.4;}30%{transform:translateY(-4px);opacity:1;}}
+
+  .empty-state{
+    max-width:520px;
+    margin:12vh auto 0 auto;
+    text-align:center;
+    color:var(--ink-soft);
+  }
+  .empty-state .mark{margin:0 auto 16px auto;}
+  .empty-state h2{font-size:17px;color:var(--ink);margin:0 0 6px 0;font-weight:600;}
+  .empty-state p{font-size:13.5px;margin:0;}
+
+  footer{
+    flex-shrink:0;
+    padding:14px 20px 20px 20px;
+  }
+  .composer{
+    max-width:720px;
+    margin:0 auto;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:8px 8px 8px 16px;
+    display:flex;
+    align-items:flex-end;
+    gap:8px;
+    box-shadow:0 1px 3px rgba(43,38,33,0.05);
+  }
+  .composer textarea{
+    flex:1;
+    border:none;
+    outline:none;
+    resize:none;
+    font-family:inherit;
+    font-size:14.5px;
+    line-height:1.5;
+    max-height:160px;
+    padding:8px 0;
+    background:transparent;
+    color:var(--ink);
+  }
+  .icon-btn{
+    background:transparent;
+    color:var(--ink-soft);
+    width:34px;height:34px;
+    border-radius:9px;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .icon-btn:hover{background:var(--cream-2);color:var(--ink);}
+  .send-btn{
+    background:var(--terracotta);
+    color:#fff;
+    width:34px;height:34px;
+    border-radius:9px;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .send-btn:disabled{background:var(--cream-2);color:var(--ink-soft);cursor:default;}
+  .attach-chip{
+    max-width:720px;
+    margin:0 auto 8px auto;
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .chip{
+    background:var(--cream-2);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:5px 10px;
+    font-size:12px;
+    color:var(--ink-soft);
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .chip button{background:none;color:var(--ink-soft);font-size:14px;line-height:1;}
+
+  /* ---------- Admin modal ---------- */
+  .modal-backdrop{
+    display:none;
+    position:fixed;inset:0;
+    background:rgba(43,38,33,0.35);
+    align-items:center;justify-content:center;
+    z-index:50;
+    padding:20px;
+  }
+  .modal{
+    background:#fff;
+    border-radius:14px;
+    padding:24px;
+    width:100%;max-width:340px;
+  }
+  .modal h3{margin:0 0 4px 0;font-size:16px;}
+  .modal p{margin:0 0 16px 0;font-size:12.5px;color:var(--ink-soft);}
+  .model-option{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:10px 12px;
+    border:1px solid var(--line);
+    border-radius:9px;
+    margin-bottom:8px;
+    font-size:13.5px;
+    cursor:pointer;
+  }
+  .model-option:hover{border-color:var(--terracotta);}
+  .model-option.active{border-color:var(--terracotta);background:var(--terracotta-soft);}
+  .modal-close{
+    margin-top:6px;
+    width:100%;
+    background:var(--cream-2);
+    color:var(--ink);
+    padding:9px;
+    border-radius:9px;
+    font-size:13.5px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= GATE ================= -->
+<div id="gate">
+  <div class="gate-card">
+    <div class="mark"></div>
+    <h1>Connect to your AI</h1>
+    <p>Enter your server address and access key. Both are only stored on this device.</p>
+
+    <label for="serverUrl">Server URL</label>
+    <input type="text" id="serverUrl" placeholder="https://your-tunnel-url.trycloudflare.com">
+
+    <label for="apiKey">Access key</label>
+    <input type="password" id="apiKey" placeholder="Your access key">
+
+    <div class="remember">
+      <input type="checkbox" id="rememberMe" checked>
+      <label style="margin:0;font-weight:400;color:var(--ink-soft);" for="rememberMe">Remember on this device</label>
+    </div>
+
+    <button class="btn-primary" id="connectBtn">Connect</button>
+    <div class="gate-error" id="gateError">Couldn't reach that server. Check the URL and key, then try again.</div>
+  </div>
+</div>
+
+<!-- ================= APP ================= -->
+<div id="app">
+  <header>
+    <div class="brand">
+      <div class="mark"></div>
+      <span>Home AI</span>
+    </div>
+    <button class="model-pill" id="modelPill">
+      <span class="dot"></span>
+      <span id="modelName">connecting…</span>
+    </button>
+  </header>
+
+  <main id="main">
+    <div class="thread" id="thread">
+      <div class="empty-state" id="emptyState">
+        <div class="mark"></div>
+        <h2>Ready when you are</h2>
+        <p>Running on your own PC — ask a coding question, paste an error, or attach a file to get started.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="attach-chip" id="attachChips"></div>
+    <div class="composer">
+      <button class="icon-btn" id="attachBtn" title="Attach a file">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+      </button>
+      <input type="file" id="fileInput" style="display:none" multiple>
+      <textarea id="messageInput" placeholder="Message your AI…" rows="1"></textarea>
+      <button class="send-btn" id="sendBtn" disabled title="Send">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"></path></svg>
+      </button>
+    </div>
+  </footer>
+</div>
+
+<!-- ================= ADMIN MODAL ================= -->
+<div class="modal-backdrop" id="adminBackdrop">
+  <div class="modal">
+    <h3>Switch model</h3>
+    <p>Choose which model on your PC handles the next messages.</p>
+    <div id="modelList"></div>
+    <button class="modal-close" id="closeModal">Close</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---- Change this to whatever you like. This is a soft UI gate only,
+  // not real security — the real access control is the server access key. ----
+  const ADMIN_CODE = "changeme";
+
+  const $ = (id) => document.getElementById(id);
+
+  let serverUrl = localStorage.getItem("homeai_url") || "";
+  let apiKey = localStorage.getItem("homeai_key") || "";
+  let activeModel = localStorage.getItem("homeai_model") || "";
+  let availableModels = [];
+  let history = [];
+  let attachments = [];
+
+  // ---------------- Gate ----------------
+  $("serverUrl").value = serverUrl;
+  $("apiKey").value = apiKey;
+
+  if (serverUrl && apiKey) {
+    tryConnect(true);
+  }
+
+  $("connectBtn").addEventListener("click", () => tryConnect(false));
+
+  async function tryConnect(silent){
+    const url = $("serverUrl").value.trim().replace(/\/$/, "");
+    const key = $("apiKey").value.trim();
+    if(!url || !key){ return; }
+
+    $("connectBtn").disabled = true;
+    $("connectBtn").textContent = "Connecting…";
+    $("gateError").style.display = "none";
+
+    try{
+      const res = await fetch(url + "/models", {
+        headers: { "Authorization": "Bearer " + key }
+      });
+      if(!res.ok) throw new Error("bad response");
+      const data = await res.json();
+      availableModels = data.models || [];
+
+      serverUrl = url;
+      apiKey = key;
+      if($("rememberMe").checked){
+        localStorage.setItem("homeai_url", url);
+        localStorage.setItem("homeai_key", key);
+      }
+      if(!activeModel && availableModels.length){
+        activeModel = availableModels[0];
+        localStorage.setItem("homeai_model", activeModel);
+      }
+
+      $("modelName").textContent = activeModel || "no model found";
+      $("gate").style.display = "none";
+      $("app").style.display = "flex";
+    }catch(err){
+      if(!silent){
+        $("gateError").style.display = "block";
+      }
+      $("connectBtn").disabled = false;
+      $("connectBtn").textContent = "Connect";
+    }
+  }
+
+  // ---------------- Composer ----------------
+  const input = $("messageInput");
+  const sendBtn = $("sendBtn");
+
+  input.addEventListener("input", () => {
+    input.style.height = "auto";
+    input.style.height = Math.min(input.scrollHeight, 160) + "px";
+    sendBtn.disabled = input.value.trim().length === 0;
+  });
+
+  input.addEventListener("keydown", (e) => {
+    if(e.key === "Enter" && !e.shiftKey){
+      e.preventDefault();
+      if(!sendBtn.disabled) sendMessage();
+    }
+  });
+
+  sendBtn.addEventListener("click", sendMessage);
+
+  // ---------------- File attach ----------------
+  $("attachBtn").addEventListener("click", () => $("fileInput").click());
+  $("fileInput").addEventListener("change", async (e) => {
+    for(const file of e.target.files){
+      try{
+        const text = await file.text();
+        attachments.push({ name: file.name, content: text });
+        renderChips();
+      }catch(err){
+        alert("Couldn't read " + file.name + " — text-based files (code, .txt, .md, .json, .csv) work best.");
+      }
+    }
+    $("fileInput").value = "";
+  });
+
+  function renderChips(){
+    const box = $("attachChips");
+    box.innerHTML = "";
+    attachments.forEach((a, i) => {
+      const chip = document.createElement("div");
+      chip.className = "chip";
+      chip.innerHTML = "<span>📎 " + escapeHtml(a.name) + "</span>";
+      const remove = document.createElement("button");
+      remove.textContent = "×";
+      remove.addEventListener("click", () => { attachments.splice(i,1); renderChips(); });
+      chip.appendChild(remove);
+      box.appendChild(chip);
+    });
+  }
+
+  // ---------------- Chat ----------------
+  async function sendMessage(){
+    const text = input.value.trim();
+    if(!text) return;
+
+    let fullContent = text;
+    if(attachments.length){
+      fullContent += "\n\n" + attachments.map(a =>
+        "Attached file: " + a.name + "\n```\n" + a.content + "\n```"
+      ).join("\n\n");
+    }
+
+    $("emptyState").style.display = "none";
+    appendMessage("user", text, attachments.map(a => a.name));
+    history.push({ role: "user", content: fullContent });
+    attachments = [];
+    renderChips();
+
+    input.value = "";
+    input.style.height = "auto";
+    sendBtn.disabled = true;
+
+    const typingEl = appendTyping();
+
+    try{
+      const res = await fetch(serverUrl + "/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + apiKey
+        },
+        body: JSON.stringify({
+          model: activeModel,
+          messages: history
+        })
+      });
+      if(!res.ok) throw new Error("request failed");
+      const data = await res.json();
+      const reply = (data.message && data.message.content) || data.reply || "(empty response)";
+
+      typingEl.remove();
+      appendMessage("assistant", reply);
+      history.push({ role: "assistant", content: reply });
+    }catch(err){
+      typingEl.remove();
+      appendMessage("assistant", "Couldn't reach your PC — check that the server is running and the tunnel is up, then try again.");
+    }
+  }
+
+  function appendMessage(role, text, fileNames){
+    const thread = $("thread");
+    const wrap = document.createElement("div");
+    wrap.className = "msg " + role;
+
+    if(role === "user"){
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+      bubble.textContent = text;
+      wrap.appendChild(bubble);
+    }else{
+      const label = document.createElement("div");
+      label.className = "role-label";
+      label.textContent = (activeModel || "assistant").toUpperCase();
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+      bubble.innerHTML = renderMarkdownish(text);
+      wrap.appendChild(label);
+      wrap.appendChild(bubble);
+    }
+
+    thread.appendChild(wrap);
+    $("main").scrollTop = $("main").scrollHeight;
+  }
+
+  function appendTyping(){
+    const thread = $("thread");
+    const wrap = document.createElement("div");
+    wrap.className = "msg assistant";
+    wrap.innerHTML = '<div class="role-label">' + (activeModel||"assistant").toUpperCase() +
+      '</div><div class="typing"><span></span><span></span><span></span></div>';
+    thread.appendChild(wrap);
+    $("main").scrollTop = $("main").scrollHeight;
+    return wrap;
+  }
+
+  function escapeHtml(s){
+    return s.replace(/[&<>"']/g, (c) => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    }[c]));
+  }
+
+  function renderMarkdownish(text){
+    let escaped = escapeHtml(text);
+    escaped = escaped.replace(/```([\s\S]*?)```/g, (m, code) => "<pre><code>" + code.trim() + "</code></pre>");
+    escaped = escaped.replace(/`([^`]+)`/g, "<code>$1</code>");
+    escaped = escaped.replace(/\n/g, "<br>");
+    return escaped;
+  }
+
+  // ---------------- Admin: switch model ----------------
+  $("modelPill").addEventListener("click", () => {
+    const code = prompt("Admin code to switch models:");
+    if(code !== ADMIN_CODE){
+      if(code !== null) alert("Incorrect code.");
+      return;
+    }
+    renderModelList();
+    $("adminBackdrop").style.display = "flex";
+  });
+
+  $("closeModal").addEventListener("click", () => {
+    $("adminBackdrop").style.display = "none";
+  });
+
+  function renderModelList(){
+    const box = $("modelList");
+    box.innerHTML = "";
+    if(!availableModels.length){
+      box.innerHTML = "<p style='font-size:13px;color:var(--ink-soft);'>No models found on the server.</p>";
+      return;
+    }
+    availableModels.forEach((m) => {
+      const opt = document.createElement("div");
+      opt.className = "model-option" + (m === activeModel ? " active" : "");
+      opt.textContent = m;
+      opt.addEventListener("click", () => {
+        activeModel = m;
+        localStorage.setItem("homeai_model", m);
+        $("modelName").textContent = m;
+        $("adminBackdrop").style.display = "none";
+      });
+      box.appendChild(opt);
+    });
+  }
+
+})();
+</script>
+</body>
+</html>
